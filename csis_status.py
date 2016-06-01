@@ -67,7 +67,10 @@ class CSISStatus(CSISConfigs):
                 try:
                     status_list.append(int(data[1]))
                 except ValueError:
-                    status_list.append(float(data[1]))
+                    try:
+                        status_list.append(float(data[1]))
+                    except ValueError:
+                        status_list.append(data[1])
             print(status_list)
             return status_list
 
