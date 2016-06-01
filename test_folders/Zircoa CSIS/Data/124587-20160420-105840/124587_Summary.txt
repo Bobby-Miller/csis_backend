@@ -1,0 +1,12 @@
+BATCH ID: 124587
+DATE:4/20/2016
+TIME: 10:58 AM
+RESULTS
+
+Total	7	100.0
+Good	2	28.6
+Fail	4	57.1
+Fail - OD	0	0.0
+Backwards	0	0.0
+N/A	1	14.3
+

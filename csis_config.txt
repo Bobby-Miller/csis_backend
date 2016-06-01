@@ -1,0 +1,5 @@
+test=True
+data_path=C:/Users/Public/Documents/Zircoa CSIS/data
+test_data_path=./test_folders/Zircoa CSIS/data
+ignore_stats_lines=1
+ignore_summary_lines=5
