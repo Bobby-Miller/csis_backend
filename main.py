@@ -61,6 +61,7 @@ class Main(CSISConfigs):
                 self.db_data.reset_session()
                 sleep(5)
                 last_batch = self.current_batch
+                print(last_batch)
                 if not self.stats_entered:
                     stats = Stats(self.current_batch)
                     if stats.exists():
@@ -74,8 +75,11 @@ class Main(CSISConfigs):
                 with self.thread_lock:
                     self.db_data.commit()
                 self.current_batch = self.folder_data.current_batch()
+                print(self.current_batch)
                 if self.current_batch != last_batch:
+                    print('current batch != last_batch')
                     self.db_data.add_batch(self.current_batch)
+                    self.db_data.commit()
                     self.stats_entered = False
                     self.summary_entered = False
             except DBAPIError:
