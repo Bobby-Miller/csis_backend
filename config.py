@@ -4,7 +4,11 @@ with open('csis_config.txt', 'r') as data:
     reader = reader(data, delimiter="=")
     configs = {}
     for config in reader:
-        configs[config[0]] = config[1]
+        print(config)
+        try:
+            configs[config[0]] = config[1]
+        except IndexError:
+            pass
 
 bool_dict = {'True': True, 'False': False}
 
