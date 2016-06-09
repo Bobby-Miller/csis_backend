@@ -7,10 +7,7 @@ import pyodbc
 import warnings
 
 
-
-
 def connect():
-
     server = 'ZIRSYSPRO'
     db = 'MAINTDATA'
     return pyodbc.connect('DRIVER={SQL Server};SERVER=' + server +

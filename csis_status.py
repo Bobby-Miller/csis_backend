@@ -9,13 +9,13 @@ from config import CSISConfigs
 
 class CSISStatus(CSISConfigs):
     def __init__(self):
+        # Pull in config class variables
         super().__init__()
         # Initialize DB/ORM session for use in class
         self.session = Session()
-
+        # Pull status from db, if exists.
         try:
-            self.db_status = self.session.query(CSISCurrent).filter_by(
-                id=1).one()
+            self.db_status = self.session.query(CSISCurrent).filter_by(id=1).one()
         except NoResultFound:
             self.db_status = None
         except MultipleResultsFound:
@@ -34,6 +34,12 @@ class CSISStatus(CSISConfigs):
 
     @db_status.setter
     def db_status(self, db_status):
+        """
+        Sets db_status to what is in the file if the database, and adds the file data to
+        the database if None.
+        :param db_status: namedtuple: status data set.
+        :return: No return
+        """
         if db_status is None:
             # self.db_status = CSISCurrent(self.status_from_file())
             # self.session.add(self.db_status)
@@ -59,6 +65,10 @@ class CSISStatus(CSISConfigs):
             self.__status_list = status_list
 
     def status_from_file(self):
+        """
+        Pull status data from file, convert it, and return a status namedtuple
+        :return: status namedtuple
+        """
         data_path = self.data_path + '/Status.txt'
         with open(data_path, 'r') as file_data:
             reader = csv.reader(file_data, delimiter=':')

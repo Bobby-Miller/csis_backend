@@ -1,0 +1,10 @@
+Batch ID: 169606R
+Total: 133
+Pass: 33
+Fail: 20
+Fail OD: 73
+Backwards: 2
+N/A: 5
+Downstream Counter: 1783
+ Lost to Homing: 0
+Batch Homes: 0
