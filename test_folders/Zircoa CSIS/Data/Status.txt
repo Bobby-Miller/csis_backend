@@ -1,5 +1,5 @@
 Batch ID: 169606R
-Total: 133
+Total: 1355
 Pass: 33
 Fail: 20
 Fail OD: 73

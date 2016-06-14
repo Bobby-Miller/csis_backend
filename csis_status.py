@@ -1,8 +1,5 @@
 import csv
-import os
-import pandas as pd
-from datetime import date, time, datetime
-from csis_sql_orm import Session, CSISStats, CSISCurrent
+from csis_sql_orm import Session, CSISCurrent
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from config import CSISConfigs
 
@@ -43,11 +40,16 @@ class CSISStatus(CSISConfigs):
         if db_status is None:
             # self.db_status = CSISCurrent(self.status_from_file())
             # self.session.add(self.db_status)
-            data_labels = ["batch_id", "total", "passed", "failed", "failed_od",
-                           "failed_backwards", "n_a"]
-            data_list = self.status_from_file()
-            kwargs = dict(zip(data_labels, data_list))
-            self.__db_status = CSISCurrent(id=1, **kwargs)
+            status_dict = self.status_from_file()
+            sql_labels = {
+                'batch_id': status_dict["batch_id"], 'total': status_dict["Total"],
+                'passed': status_dict["Pass"], 'failed': status_dict["Fail"],
+                'failed_od': status_dict["Fail OD"],
+                'backwards': status_dict["Backwards"], 'n_a': status_dict["N/A"],
+                'lost_homing': status_dict[" Lost to Homing"],
+                'batch_homes': status_dict["Batch Homes"],
+            }
+            self.__db_status = CSISCurrent(id=1, **sql_labels)
             self.session.add(self.__db_status)
             self.session.commit()
         else:
@@ -66,23 +68,25 @@ class CSISStatus(CSISConfigs):
 
     def status_from_file(self):
         """
-        Pull status data from file, convert it, and return a status namedtuple
-        :return: status namedtuple
+        Pull status data from the file, and return a dict whose key is the data title,
+        and whose value is converted to int, or float, or string in that order, based
+        on convertability
+        :return: status list
         """
         data_path = self.data_path + '/Status.txt'
         with open(data_path, 'r') as file_data:
             reader = csv.reader(file_data, delimiter=':')
-            status_list = [next(reader)[1][1:]]
+            status_dict = {}
+            status_dict['batch_id'] = next(reader)[1][1:]
             for data in reader:
                 try:
-                    status_list.append(int(data[1]))
+                    status_dict[data[0]] = int(data[1])
                 except ValueError:
                     try:
-                        status_list.append(float(data[1]))
+                        status_dict[data[0]] = float(data[1])
                     except ValueError:
-                        status_list.append(data[1])
-            print(status_list)
-            return status_list
+                        status_dict[data[0]] = data[1]
+            return status_dict
 
     def compare_status_w_file(self):
         file = self.status_from_file()
@@ -93,13 +97,15 @@ class CSISStatus(CSISConfigs):
             return False
 
     def update_db_status(self):
-        self.db_status.batch_id = self.status_list[0]
-        self.db_status.total = self.status_list[1]
-        self.db_status.passed = self.status_list[2]
-        self.db_status.failed = self.status_list[3]
-        self.db_status.failed_od = self.status_list[4]
-        self.db_status.failed_backwards = self.status_list[5]
-        self.db_status.n_a = self.status_list[6]
+        self.db_status.batch_id = self.status_list['batch_id']
+        self.db_status.total = self.status_list['Total']
+        self.db_status.passed = self.status_list['Pass']
+        self.db_status.failed = self.status_list['Fail']
+        self.db_status.failed_od = self.status_list['Fail OD']
+        self.db_status.backwards = self.status_list['Backwards']
+        self.db_status.n_a = self.status_list['N/A']
+        self.db_status.lost_homing = self.status_list[' Lost to Homing']
+        self.db_status.batch_homes = self.status_list['Batch Homes']
         self.session.add(self.db_status)
         self.session.commit()
 
@@ -108,5 +114,4 @@ class CSISStatus(CSISConfigs):
         self.session = Session()
 
 if __name__ == '__main__':
-    print(CSISStatus().status_df.values[1][0])
-    print(type(CSISStatus().status_df.values[1][0]))
+    CSISStatus().update_db_status()

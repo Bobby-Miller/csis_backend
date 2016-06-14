@@ -123,8 +123,11 @@ class CSISCurrent(Base):
     passed = Column(Integer)
     failed = Column(Integer)
     failed_od = Column(Integer)
-    failed_backwards = Column(Integer)
+    backwards = Column(Integer)
     n_a = Column(Integer)
+    lost_homing = Column(Integer)
+    batch_homes = Column(Integer)
+
 
 Session = sessionmaker(bind=engine)
 
